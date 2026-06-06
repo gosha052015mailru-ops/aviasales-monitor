@@ -1,0 +1,25 @@
+#!/usr/bin/expect -f
+set timeout 120
+set password "WH;8W~47!~ci.k:("
+
+spawn scp -o StrictHostKeyChecking=no app.py checker.py config.py .env.example requirements.txt root@104.128.137.247:/opt/aviasales-monitor/
+expect "*assword:*"
+send "$password\r"
+expect eof
+
+spawn ssh -o StrictHostKeyChecking=no root@104.128.137.247
+expect "*assword:*"
+send "$password\r"
+expect "#"
+send "cd /opt/aviasales-monitor\r"
+expect "#"
+send "cp .env.example .env\r"
+expect "#"
+send "source venv/bin/activate\r"
+expect "#"
+send "pip install -r requirements.txt\r"
+expect "#"
+send "python app.py\r"
+expect "#"
+send "exit\r"
+expect eof

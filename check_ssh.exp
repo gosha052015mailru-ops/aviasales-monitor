@@ -1,0 +1,10 @@
+#!/usr/bin/expect -f
+set timeout 20
+spawn ssh -o StrictHostKeyChecking=no root@104.128.137.247 "curl -sSL -A 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36' https://www.aeroflot.ru/sb/subsidized/app/ru-ru | head -c 2000"
+expect {
+    "*assword:*" {
+        send "WH;8W~47!~ci.k:(\r"
+        exp_continue
+    }
+    eof
+}
