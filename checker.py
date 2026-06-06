@@ -11,6 +11,7 @@ from playwright.sync_api import Page, TimeoutError as PlaywrightTimeoutError, sy
 from playwright_stealth import Stealth
 
 from config import AppConfig
+import re
 
 logger = logging.getLogger(__name__)
 
@@ -27,10 +28,10 @@ class FillResult:
     message: str
     html_content: str = ""
 
-def extract_prices(html: str) -> dict[str, int]:
+def extract_prices(html: str) -> dict[str, int | None]:
     soup = BeautifulSoup(html, "html.parser")
 
-    prices = {}
+    prices: dict[str, int | None] = {}
 
     for item in soup.select(".price-chart__item"):
         date_el = item.select_one(".price-chart__item-number")
@@ -41,16 +42,19 @@ def extract_prices(html: str) -> dict[str, int]:
 
         date_text = date_el.get_text(strip=True)
 
+        # Например 18 июля, когда рейса нет
         if not price_el:
             prices[date_text] = None
             continue
 
         raw_price = price_el.get_text(" ", strip=True)
 
-        digits = "".join(ch for ch in raw_price if ch.isdigit())
+        match = re.search(r"(\d+(?:\.\d+)?)", raw_price)
 
-        if digits:
-            prices[date_text] = int(digits)
+        if match:
+            prices[date_text] = int(float(match.group(1)))
+        else:
+            prices[date_text] = None
 
     return prices
 
