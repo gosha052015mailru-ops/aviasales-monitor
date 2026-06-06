@@ -27,6 +27,32 @@ class FillResult:
     message: str
     html_content: str = ""
 
+def extract_prices(html: str) -> dict[str, int]:
+    soup = BeautifulSoup(html, "html.parser")
+
+    prices = {}
+
+    for item in soup.select(".price-chart__item"):
+        date_el = item.select_one(".price-chart__item-number")
+        price_el = item.select_one(".price-chart__item-price")
+
+        if not date_el:
+            continue
+
+        date_text = date_el.get_text(strip=True)
+
+        if not price_el:
+            prices[date_text] = None
+            continue
+
+        raw_price = price_el.get_text(" ", strip=True)
+
+        digits = "".join(ch for ch in raw_price if ch.isdigit())
+
+        if digits:
+            prices[date_text] = int(digits)
+
+    return prices
 
 def parse_program_options_from_html(file_path: str | Path) -> list[ParsedProgramOption]:
     html = Path(file_path).read_text(encoding="utf-8")
