@@ -3,6 +3,13 @@ from __future__ import annotations
 import logging
 from pathlib import Path
 
+from notifier import send_email
+
+send_email(
+    "Тест с сервера",
+    "Если вы получили это письмо, SMTP работает."
+)
+
 from checker import fill_subsidy_form, parse_program_options_from_html
 from config import load_config
 
