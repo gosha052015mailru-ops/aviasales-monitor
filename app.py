@@ -34,7 +34,7 @@ def main() -> int:
 	)
     prices = extract_prices(result.html_content)
     print("\nЦены:")
-	for day in [
+    for day in [
 		"15 июля",
 		"16 июля",
 		"17 июля",
@@ -42,7 +42,7 @@ def main() -> int:
 		"19 июля",
 		"20 июля",
 	]:
-		print(f"{day}: {prices.get(day)}")
+        print(f"{day}: {prices.get(day)}")
 
     logging.info("Статус: %s", result.status)
     logging.info("Сообщение: %s", result.message)
