@@ -16,45 +16,51 @@ def setup_logging() -> None:
 
 
 def main() -> int:
-    setup_logging()
-    cfg = load_config()
+	setup_logging()
+	cfg = load_config()
 
-    html_file = Path(__file__).with_name("subsidi.html")
-    if html_file.exists():
-        options = parse_program_options_from_html(html_file)
-        logging.info(
-            "Найдено программ субсидирования в локальном HTML: %s",
-            ", ".join(opt.text for opt in options),
-        )
+	html_file = Path(__file__).with_name("subsidi.html")
+	if html_file.exists():
+		options = parse_program_options_from_html(html_file)
+		logging.info(
+			"Найдено программ субсидирования в локальном HTML: %s",
+			", ".join(opt.text for opt in options),
+		)
 
-    result = fill_subsidy_form(cfg)
-    f = send_email(
-		"Тест с сервера",
-		"Если вы получили это письмо, SMTP работает."
-	)
-    prices = extract_prices(result.html_content)
-    print("\nЦены:")
-    for day in [
+	result = fill_subsidy_form(cfg)
+
+	prices = extract_prices(result.html_content)
+
+	print("\nЦены:")
+
+	target_days = [
 		"15 июля",
 		"16 июля",
 		"17 июля",
 		"18 июля",
 		"19 июля",
-		"20 июля",
-	]:
-        print(f"{day}: {prices.get(day)}")
+	]
 
-    logging.info("Статус: %s", result.status)
-    logging.info("Сообщение: %s", result.message)
-    logging.info("Итоговый URL: %s", result.final_url)
-    
-	
+	for day in target_days:
+		price = prices.get(day)
 
-    # Простейшая проверка наличия числа 21000 на странице (например, цены)
-    if "21000" in result.html_content or "21 000" in result.html_content:
-        logging.info("ЦЕНА ПРОВЕРКИ: На странице найдено число 21000 (или 21 000)!")
-    else:
-        logging.info("ЦЕНА ПРОВЕРКИ: Числа 21000 на странице не найдено.")
+		if price is None:
+			print(f"{day}: нет рейса")
+			continue
+
+		print(f"{day}: {price:,} ₽".replace(",", " "))
+
+		if day in target_days and price == 7500:
+			send_email(
+				subject="Найден субсидированный билет",
+				body=f"""Найден субсидированный билет на {day} по цене 7500 ₽!"""
+			)
+			print(f"Отправлено уведомление на почту о билете за 7500 ₽ на {day}.")
+	logging.info("Статус: %s", result.status)
+	logging.info("Сообщение: %s", result.message)
+	logging.info("Итоговый URL: %s", result.final_url)
+
+	return 0
 
 if __name__ == "__main__":
     raise SystemExit(main())
