@@ -31,8 +31,6 @@ def main() -> int:
 
 	prices = extract_prices(result.html_content)
 
-	print("\nЦены:")
-
 	target_days = [
 		"15 июля",
 		"16 июля",
@@ -57,8 +55,6 @@ def main() -> int:
 			)
 			print(f"Отправлено уведомление на почту о билете за 7500 ₽ на {day}.")
 	logging.info("Статус: %s", result.status)
-	logging.info("Сообщение: %s", result.message)
-	logging.info("Итоговый URL: %s", result.final_url)
 
 	return 0
 
