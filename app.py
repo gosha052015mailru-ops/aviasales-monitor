@@ -55,6 +55,7 @@ def main() -> int:
 			)
 			print(f"Отправлено уведомление на почту о билете за 7500 ₽ на {day}.")
 	logging.info("Статус: %s", result.status)
+	logging.info("Сообщение: %s", result.message)
 
 	return 0
 
