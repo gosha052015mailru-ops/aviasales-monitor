@@ -30,6 +30,12 @@ def main() -> int:
 	result = fill_subsidy_form(cfg)
 
 	prices = extract_prices(result.html_content)
+	if not prices:
+		send_email(
+			subject="Ошибка парсинга Аэрофлот",
+			body=f"""Не удалось получить цены со страницы."""
+		)
+		return 1
 
 	target_days = [
 		"15 июля",
