@@ -35,7 +35,7 @@ def main() -> int:
 			subject="Ошибка парсинга Аэрофлот",
 			body=f"""Не удалось получить цены со страницы."""
 		)
-		return 1
+		return 0
 
 	target_days = [
 		"15 июля",
@@ -54,12 +54,12 @@ def main() -> int:
 
 		print(f"{day}: {price:,} ₽".replace(",", " "))
 
-		if day in target_days and price == 7500:
+		if day in target_days and price <= 15000:
 			send_email(
 				subject="Найден субсидированный билет",
-				body=f"""Найден субсидированный билет на {day} по цене 7500 ₽!"""
+				body=f"""Найден субсидированный билет на {day} по цене {price} ₽!"""
 			)
-			print(f"Отправлено уведомление на почту о билете за 7500 ₽ на {day}.")
+			print(f"Отправлено уведомление на почту о билете за {price} ₽ на {day}.")
 	logging.info("Статус: %s", result.status)
 	logging.info("Сообщение: %s", result.message)
 
