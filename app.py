@@ -63,6 +63,30 @@ def main() -> int:
 	logging.info("Статус: %s", result.status)
 	logging.info("Сообщение: %s", result.message)
 
+	price_17 = prices.get("17 июля")
+
+	if price_17 is not None and price_17 < 23000:
+		send_email(
+			subject="Билет на 17 июля дешевле 23 000 ₽",
+			body=f"""
+	Обнаружена цена ниже 23 000 ₽.
+
+	Дата:
+	17 июля
+
+	Цена:
+	{price_17:,} ₽
+
+	Ссылка:
+	{result.final_url}
+	""".replace(",", " ")
+		)
+
+		logging.info(
+			"Отправлено уведомление: 17 июля цена %s ₽",
+			price_17,
+		)
+
 	return 0
 
 if __name__ == "__main__":
