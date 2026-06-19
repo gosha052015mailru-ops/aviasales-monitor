@@ -66,4 +66,26 @@ def main() -> int:
 	return 0
 
 if __name__ == "__main__":
-    raise SystemExit(main())
+	try:
+		raise SystemExit(main())
+
+	except Exception:
+		error_text = traceback.format_exc()
+
+		logging.exception("Критическая ошибка приложения")
+
+		try:
+			send_email(
+				subject="Ошибка мониторинга билетов",
+				body=f"""
+Во время выполнения app.py произошла ошибка.
+
+Traceback:
+
+{error_text}
+"""
+			)
+		except Exception:
+			logging.exception("Не удалось отправить письмо об ошибке")
+
+		raise
